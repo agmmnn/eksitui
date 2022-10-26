@@ -1,0 +1,78 @@
+.loggo {
+  /* background: rgb(69, 58, 58); */
+  width: auto;
+  color: rgb(175, 168, 93);
+}
+.search_input {
+  border: none;
+  width: 30;
+  margin-left: 10;
+  background: rgb(69, 58, 58);
+}
+.top {
+  /* margin-top: 1; */
+  /* padding: 0 0 1 1; */
+  outline-bottom: tall rgb(68, 87, 80);
+  height: auto;
+  color: rgb(84, 82, 134);
+  dock: top;
+  background: $boost;
+  margin-bottom: 1;
+  padding-left: 1;
+}
+
+QuickIndex {
+  dock: top;
+  color: $boost;
+  width: auto;
+  height: auto;
+  outline-bottom: round rgb(68, 87, 80);
+}
+QuickIndex > Button {
+  width: 100%;
+}
+
+TopicList {
+  dock: left;
+  width: 30;
+  overflow-y: scroll;
+  scrollbar-size: 10 1;
+  padding-left: 1;
+}
+TopicList > Button {
+  width: 100%;
+  height: auto;
+  border: none;
+  padding-bottom: 1;
+  text-align: start;
+  /* outline-bottom: tall rgb(70, 93, 85);  */
+  outline-bottom: wide rgb(68, 87, 80);
+}
+TopicList > Static {
+  padding-bottom: 1;
+}
+
+EntryContent {
+  scrollbar-size: 10 1;
+  overflow-y: scroll;
+  padding: 0 1 1 1;
+}
+
+Footer {
+  background: rgb(53, 41, 61);
+}
+
+Sidebar {
+  width: 40;
+  background: $panel;
+  transition: offset 500ms in_out_cubic;
+  layer: overlay;
+}
+
+Sidebar:focus-within {
+  offset: 0 0 !important;
+}
+
+Sidebar.-hidden {
+  offset-x: -100%;
+}

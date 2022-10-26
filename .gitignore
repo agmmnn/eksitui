@@ -1,0 +1,7 @@
+other
+__pycache__/
+.vscode
+build
+dist
+*.spec
+*.manifest
