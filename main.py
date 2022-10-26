@@ -121,6 +121,19 @@ class EksiTUIApp(App):
                 self.screen.set_focus(None)
             sidebar.add_class("-hidden")
 
+    def action_screenshot(
+        self,
+        filename: str = "ss.svg",
+        path: str = "C:/Users/agmer/Documents/Github/eksitui/img/",
+    ) -> None:
+        """Save an SVG "screenshot". This action will save an SVG file containing the current contents of the screen.
+        Args:
+            filename (str | None, optional): Filename of screenshot, or None to auto-generate. Defaults to None.
+            path (str, optional): Path to directory. Defaults to "./".
+        """
+        self.bell()
+        path = self.save_screenshot(filename, path)
+
 
 if __name__ == "__main__":
     app = EksiTUIApp()

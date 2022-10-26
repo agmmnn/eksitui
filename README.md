@@ -2,4 +2,6 @@
 
 # eksitui
 
-eksitui
+ekşi sözlük terminal user interface uygulaması.
+
+![](img/ss.svg)
