@@ -1,27 +1,22 @@
 from textual.app import App, ComposeResult
-from textual.containers import Container, Horizontal, Vertical
+from textual.containers import Container, Horizontal, Vertical, Grid
 from textual.widgets import *
 from textual.widget import Widget
+from textual.reactive import reactive
+from textual.screen import Screen
+from textual import events
+
 from rich.console import Console
 from rich.text import Text
 from rich import print
-from textual.reactive import reactive
 
-gundem = [
-    "yazarların favori bilgisayar komutları",
-    "26 ekim 2022 ümit özdağ'ın sedat pekerle görüşmesi",
-    "26 ekim 2022 ümit özdağ'ın sedat pekerle görüşmesi",
-    "26 ekim 2022 ümit özdağ'ın sedat pekerle görüşmesi",
-    "26 ekim 2022 ümit özdağ'ın sedat pekerle görüşmesi",
-    "26 ekim 2022 ümit özdağ'ın sedat pekerle görüşmesi",
-    "26 ekim 2022 ümit özdağ'ın sedat pekerle görüşmesi",
-    "26 ekim 2022 ümit özdağ'ın sedat pekerle görüşmesi",
-    "26 ekim 2022 ümit özdağ'ın sedat pekerle görüşmesi",
-    "26 ekim 2022 ümit özdağ'ın sedat pekerle görüşmesi",
-    "26 ekim 2022 ümit özdağ'ın sedat pekerle görüşmesi",
-    "26 ekim 2022 ümit özdağ'ın sedat pekerle görüşmesi",
-    "26 ekim 2022 ümit özdağ'ın sedat pekerle görüşmesi",
-]
+import asyncio
+import httpx
+
+from src import gundem, gen_token, content
+
+token = gen_token.result()
+topicid = ""
 
 
 class Content(Vertical):
@@ -30,37 +25,35 @@ class Content(Vertical):
 
 class TopicList(Widget):
     def compose(self) -> ComposeResult:
-        for i in sorted(gundem, reverse=True):
-            yield Button(i, variant="default")
-
-
-class QuickIndex(Widget):
-    # yield Static("💫 gündem:")
-    def compose(self) -> ComposeResult:
-        for i in sorted(gundem, reverse=True):
-            yield Button(i, variant="default")
-
-
-content = """
-projelere çalışırken el alışkanlığı oldu hatta google da surfing takılırken istemsizce ctrl+s komutu giriyorum.alışkanlığı oldu hatta google da surfing takılırken istemsizce ctrl+s koalışkanlığı oldu hatta google da surfing takılırken istemsizce...
-(bkz: [@click="app.open_link('https://eksisozluk.com/?q=lol')"]lol[/])
-
-(17) · 26.10.2022 15:18 · [@click="app.open_link('https://eksisozluk.com/biri/yazar')"]@yazar[/]
-[on green] ⋮ [/] 🔗entry linkini koyala | 📷ekran görüntüsü(.svg)
-
-"""
+        topbar = Static("[i]gündem " + "bugün")
+        topbar.styles.align = ("right", "top")
+        yield topbar
+        for i in gundem.result(token):  # sorted() "sıralama=alfabe,varsayılan"
+            yield Button(
+                i[0],
+                name=i[1],
+            )
 
 
 class EntryContent(Widget):
     def compose(self) -> ComposeResult:
-        # yield Static(
-        #     """[green][@click="app.open_link('https://eksisozluk.com/memur-kalitesinin-artmasi-icin-cozum-onerileri--5912619')"][b]yazarların favori bilgisayar komutları[/b][/][/green]"""
-        # )
-        yield Static(
-            """[bold green link=https://eksisozluk.com/memur-kalitesinin-artmasi-icin-cozum-onerileri--5912619]yazarların favori bilgisayar komutları[/]"""
-        )
-        yield Static("1/93")
-        yield Static(content * 3)
+        if topicid:
+            cont = content.result(token, "7250896")
+            # yield Static("1/93")
+            yield Static(
+                # f"""[@click="app.open_link('https://eksisozluk.com/{cont["Slug"]}--{cont["Id"]}')"]{cont["Title"]}[/]""",
+                f'[link=https://eksisozluk.com/{cont["Slug"]}--{cont["Id"]}]{cont["Title"]}[/]',
+                classes="entry-baslik",
+            )
+            for i in cont["Entries"]:
+                entry_content = Static(i["Content"])
+                entry_footer = Static(
+                    f'{str(i["FavoriteCount"])} {i["Author"]["Nick"]} {i["Created"]}'
+                )
+                yield Container(
+                    Vertical(entry_content, entry_footer, classes="entry"),
+                    classes="entry-container",
+                )
 
 
 class Sidebar(Container):
@@ -68,9 +61,18 @@ class Sidebar(Container):
         yield Static("Textual Demo")
 
 
-logotxt = """\
-█▀▀ █▄▀ █▀ █ ▀█▀ █░█ █
-██▄ █░█ ▄█ █ ░█░ █▄█ █"""
+logotxt1 = """\
+█▀▀ █▄▀ █▀ █
+██▄ █░█ ▄█ █"""
+logotxt2 = """\
+ ▀█▀ █░█ █
+ ░█░ █▄█ █"""
+
+righttxt = Static(
+    """\
+. *  ˚    *    .   ✫       *   * · .      *   ✧  ·       *   * · .       +      ★      ,      ✦             ˚""",
+    classes="righttxt",
+)
 
 
 class EksiTUIApp(App):
@@ -80,10 +82,10 @@ class EksiTUIApp(App):
         ("t", "toggle_dark", "🎨Tema"),
         ("ctrl+b", "toggle_sidebar", "Sidebar"),
         ("ctrl+s", "app.screenshot()", "Screenshot"),
-        ("f", "app.arama_focus", "Arama"),
-        ("h", "toggle_sidebar2", "Hakkında"),
+        ("f", "arama_focus", "Arama"),
+        ("h", "about", "Hakkında"),
         ("f1", "app.toggle_class('TextLog', '-hidden')", "Notes"),
-        ("ctrl+c,ctrl+q", "app.quit", "🪧 Çıkış"),
+        ("ctrl+c,ctrl+q", "app.quit", "🪧Çıkış"),
     ]
 
     def action_open_link(self, link: str) -> None:
@@ -92,23 +94,47 @@ class EksiTUIApp(App):
         webbrowser.open(link)
 
     def compose(self) -> ComposeResult:
-        loggo = Static(logotxt, classes="loggo")
-        search_input = Input(placeholder="ara 🔎", classes="search_input")
+        self.loggo = Static(logotxt1, classes="loggo")
+        self.loggo.styles.opacity = 0.0
+        self.loggo2 = Static(logotxt2, classes="loggo2")
+        search_input = Input(placeholder="arama", classes="search_input")
         search_input.cursor_blink = False
-        yield Horizontal(loggo, search_input, classes="top")
+        yield Horizontal(
+            self.loggo,
+            self.loggo2,
+            search_input,
+            righttxt,
+            classes="top",
+        )
         # yield Content(QuickIndex())
         entry = EntryContent()
         yield Vertical(
             Horizontal(TopicList(), entry), Sidebar(classes="-hidden"), Footer()
         )
 
-    # def on_button_pressed(self) -> None:
-    #     self.exit()
+    def on_button_pressed(self, event: Button.Pressed) -> None:
+        topicid = event.button.name
+        print(event.button.name)
+
+    def on_key(self, event: events.Key) -> None:
+        if event.key == "ctrl+x":
+            self.query_one(Input).value = ""
+        if event.key == "ctrl+o":
+            footer = self.query_one(Footer)
+            footer.styles.display = (
+                "none" if footer.styles.display == "block" else "block"
+            )
+
+    def on_mount(self):
+        self.loggo.styles.animate(
+            "opacity", value=1.0, duration=1.1, easing="out_bounce"
+        )
 
     def action_toggle_dark(self):
         self.dark = not self.dark
 
-    def arama_focus(self):
+    def action_arama_focus(self):
+        self.query_one(Input).focus()
         print("focus input")
 
     def action_toggle_sidebar(self) -> None:
@@ -121,10 +147,13 @@ class EksiTUIApp(App):
                 self.screen.set_focus(None)
             sidebar.add_class("-hidden")
 
+    def action_about(self) -> None:
+        print("hakkinda")
+
     def action_screenshot(
         self,
         filename: str = "ss.svg",
-        path: str = "C:/Users/agmer/Documents/Github/eksitui/img/",
+        path: str = "./img/",
     ) -> None:
         """Save an SVG "screenshot". This action will save an SVG file containing the current contents of the screen.
         Args:

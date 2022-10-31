@@ -1,13 +1,24 @@
 .loggo {
   /* background: rgb(69, 58, 58); */
   width: auto;
-  color: rgb(175, 168, 93);
+  color: $success;
+}
+.loggo2 {
+  /* background: rgb(69, 58, 58); */
+  width: auto;
+  color: $success-darken-2;
+}
+.righttxt {
+  width: auto;
+  color: $panel-darken-2;
 }
 .search_input {
   border: none;
   width: 30;
   margin-left: 10;
-  background: rgb(69, 58, 58);
+  background: $boost;
+  border: vkey rgb(68, 87, 80); /* vkey, tall, blank, hkey */
+  border-top: hidden;
 }
 .top {
   /* margin-top: 1; */
@@ -21,6 +32,13 @@
   padding-left: 1;
 }
 
+/* Footer {
+  visibility: hidden;
+} */
+Checkbox {
+  border: none;
+  background: $boost;
+}
 QuickIndex {
   dock: top;
   color: $boost;
@@ -52,12 +70,6 @@ TopicList > Static {
   padding-bottom: 1;
 }
 
-EntryContent {
-  scrollbar-size: 10 1;
-  overflow-y: scroll;
-  padding: 0 1 1 1;
-}
-
 Footer {
   background: rgb(53, 41, 61);
 }
@@ -75,4 +87,24 @@ Sidebar:focus-within {
 
 Sidebar.-hidden {
   offset-x: -100%;
+}
+
+EntryContent {
+  scrollbar-size: 10 1;
+  overflow-y: scroll;
+  padding: 0 0 0 2;
+}
+.entry-container {
+  height: auto;
+}
+.entry {
+  background: $panel;
+  height: auto;
+  box-sizing: border-box;
+  border-bottom: wide rgb(68, 87, 80);
+}
+.entry-baslik {
+  text-style: bold;
+  color: rgb(112, 224, 112);
+  padding-bottom: 1;
 }
