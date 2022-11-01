@@ -44,35 +44,25 @@ Checkbox {
   border: none;
   background: $boost;
 }
-QuickIndex {
-  dock: top;
-  color: $boost;
-  width: auto;
-  height: auto;
-  outline-bottom: round rgb(68, 87, 80);
-}
-QuickIndex > Button {
-  width: 100%;
-}
 
 TopicList {
   dock: left;
-  width: 30;
-  overflow-y: scroll;
-  scrollbar-size: 10 1;
+  width: 32;
   padding-left: 1;
 }
-TopicList > Button {
+#topic-container > Button {
   width: 100%;
   height: auto;
   border: none;
   padding-bottom: 1;
   text-align: start;
-  /* outline-bottom: tall rgb(70, 93, 85);  */
+  background: $surface;
   outline-bottom: wide rgb(68, 87, 80);
 }
-TopicList > Static {
-  padding-bottom: 1;
+.nav {
+  text-style: bold;
+  content-align: center middle;
+  border: round rgb(93, 68, 68);
 }
 
 Footer {
@@ -92,10 +82,6 @@ Sidebar:focus-within {
 
 Sidebar.-hidden {
   offset-x: -100%;
-}
-.nav {
-  text-style: italic;
-  content-align: center middle;
 }
 
 /* #content-body {

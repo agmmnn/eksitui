@@ -20,21 +20,19 @@ import loading
 from src import gundem, gen_token, content
 
 token = gen_token.result()
-topicid = ""
 
 
 class TopicList(Widget):
     def compose(self) -> ComposeResult:
-        topbar = Static(
-            "[@click=set_background('gundem')]gündem[/]  [@click=set_background('bugun')]bugün[/]",
+        nav = Static(
+            "[@click=App.index_type('popular')]gündem[/] [@click=index_type('today')]bugün[/] [@click=index_type('debe')]debe[/]",
             classes="nav",
         )
-        yield topbar
-        for i in gundem.result(token):  # sorted() "sıralama=alfabe,varsayılan"
-            yield Button(
-                i[0],
-                name=i[1],
-            )
+        container = Container(id="topic-container")
+        container.mount(nav)
+        for i in gundem.result(token):
+            container.mount(Button(i[0], name=i[1]))
+        yield container
 
 
 class EntryContent(Widget):
@@ -133,13 +131,23 @@ class EksiTUIApp(App):
             self.query(".entry-container").remove()
         else:
             self.query_one("#loading-container").styles.display = "none"
-        cont = content.result(token, event.button.name)
+
+        self.navigate_page(event.button.name)
+        self.query_one
+
+    def navigate_page(self, topicid):
+        cont = content.result(token, topicid)
         self.query_one(".entry-baslik").update(
             f'[link=https://eksisozluk.com/{cont["Slug"]}--{cont["Id"]}]{cont["Title"]}[/]'
         )
         content_body = self.query_one("#content-body")
         for i in cont["Entries"]:
-            entry_date = datetime.strptime(i["Created"], "%Y-%m-%dT%H:%M:%S.%f")
+            try:
+                entry_date = datetime.strptime(i["Created"], "%Y-%m-%dT%H:%M:%S.%f")
+                entry_date = entry_date.strftime("%d.%m.%Y %H:%M")
+            except:
+                entry_date = datetime.strptime(i["Created"], "%Y-%m-%dT%H:%M:%S")
+                entry_date = entry_date.strftime("%d.%m.%Y")
             entry_id = i["Id"]
             fav = str(i["FavoriteCount"])
             author = i["Author"]["Nick"]
@@ -153,7 +161,7 @@ class EksiTUIApp(App):
                 )
                 + f" [link=https://eksisozluk.com/biri/{author}]{author}[/]"
                 + "\n"
-                + f'[link=https://eksisozluk.com/entry/{entry_id}]{entry_date.strftime("%d.%m.%Y %H:%M")}[/]',
+                + f"[link=https://eksisozluk.com/entry/{entry_id}]{entry_date}[/]",
                 classes="entry-footer",
             )
             ent_cont = Container(
@@ -195,6 +203,9 @@ class EksiTUIApp(App):
 
     def action_about(self) -> None:
         print("hakkinda")
+
+    def action_index_type(self, type) -> None:
+        print(type)
 
     def action_screenshot(
         self,
