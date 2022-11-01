@@ -7,6 +7,8 @@ from textual.screen import Screen
 from textual import events
 
 from datetime import datetime
+import re
+from urllib.parse import quote
 
 # import asyncio
 # import httpx
@@ -23,8 +25,10 @@ topicid = ""
 
 class TopicList(Widget):
     def compose(self) -> ComposeResult:
-        topbar = Static("[i]gündem " + "bugün")
-        topbar.styles.align = ("right", "top")
+        topbar = Static(
+            "[@click=set_background('gundem')]gündem[/]  [@click=set_background('bugun')]bugün[/]",
+            classes="nav",
+        )
         yield topbar
         for i in gundem.result(token):  # sorted() "sıralama=alfabe,varsayılan"
             yield Button(
@@ -35,41 +39,24 @@ class TopicList(Widget):
 
 class EntryContent(Widget):
     def compose(self) -> ComposeResult:
-        # yield Container(
-        #     Static(loading.output(), classes="loading"),
-        #     classes="loading-container",
-        # )
-        cont = content.result(token, "7250896")
-        # yield Static("1/93")
-        yield Static(
-            # f"""[@click="app.open_link('https://eksisozluk.com/{cont["Slug"]}--{cont["Id"]}')"]{cont["Title"]}[/]""",
-            f'[link=https://eksisozluk.com/{cont["Slug"]}--{cont["Id"]}]{cont["Title"]}[/]',
-            classes="entry-baslik",
+        yield Container(
+            Static(loading.output(), classes="loading"),
+            id="loading-container",
         )
-        for i in cont["Entries"]:
-            entry_date = datetime.strptime(i["Created"], "%Y-%m-%dT%H:%M:%S.%f")
-            entry_id = i["Id"]
-            fav = str(i["FavoriteCount"])
-            author = i["Author"]["Nick"]
-
-            entry_content = Static(i["Content"])
-            entry_footer = Static(
-                (self.smalltext(f"({fav})") if fav else None)
-                + f" [link=https://eksisozluk.com/biri/{author}]{author}[/]"
-                + "\n"
-                + f'[link=https://eksisozluk.com/entry/{entry_id}]{entry_date.strftime("%d.%m.%Y %H:%M")}[/]',
-                classes="entry-footer",
-            )
-            yield Container(
-                Vertical(entry_content, entry_footer, classes="entry"),
-                classes="entry-container",
-            )
-
-    def smalltext(self, txt: str, type: int = 1) -> str:
-        inp = "qwertyuiopasdfghjklzxcvbnmğüşıöç1234567890()-'+=?!$"
-        super_chars = "ᑫʷᵉʳᵗʸᵘⁱᵒᵖᵃˢᵈᶠᵍʰʲᵏˡᶻˣᶜᵛᵇⁿᵐᵍᵘᶳᶥᵒᶜ¹²³⁴⁵⁶⁷⁸⁹⁰⁽⁾⁻'⁺⁼ˀꜝᙚ"
-        sub_chars = "ₐₑₕᵢₖₗₘₙₒₚᵣₛₜᵤᵥₓ₁₂₃₄₅₆₇₈₉₀₊₌₍₎₋₋₋₋₋₋₋₋₋₋₋₋₋₋₋₋₋₋₋₋₋"
-        return txt.translate(str.maketrans(inp, super_chars if type else sub_chars))
+        # yield Static("1/93")
+        yield Container(
+            Static(
+                "entry-baslik",
+                classes="entry-baslik",
+            ),
+            # Container(classes="entry-container"),
+            id="content-body",
+        )
+        # Container#content-body)->
+        #       Static.entry-baslik,
+        #       Container.entry-container)->
+        #                   Vertical.entry)->
+        #                   Static.entry_txt, Static.entry-footer
 
 
 class Sidebar(Container):
@@ -120,9 +107,60 @@ class EksiTUIApp(App):
             Horizontal(TopicList(), entry), Sidebar(classes="-hidden"), Footer()
         )
 
+    def smalltext(self, txt: str, type: int = 1) -> str:
+        inp = "qwertyuiopasdfghjklzxcvbnmğüşıöç1234567890()-'+=?!$"
+        super_chars = "ᑫʷᵉʳᵗʸᵘⁱᵒᵖᵃˢᵈᶠᵍʰʲᵏˡᶻˣᶜᵛᵇⁿᵐᵍᵘᶳᶥᵒᶜ¹²³⁴⁵⁶⁷⁸⁹⁰⁽⁾⁻'⁺⁼ˀꜝᙚ"
+        sub_chars = "ₐₑₕᵢₖₗₘₙₒₚᵣₛₜᵤᵥₓ₁₂₃₄₅₆₇₈₉₀₊₌₍₎₋₋₋₋₋₋₋₋₋₋₋₋₋₋₋₋₋₋₋₋₋"
+        return txt.translate(str.maketrans(inp, super_chars if type else sub_chars))
+
+    def content_convert(self, txt: str) -> str:
+        entry_txt = txt
+        # [http: ad] -> [link=http:]ad[/]
+        if re.search("^\[http.*\]$", entry_txt):
+            pass
+
+        # [ ] -> \[ \]
+
+        # (bkz: baslik) -> (bkz: [link=http:]baslik[/])
+
+        # `:akıllı bkz` -> [link=https://eksisozluk.com/?q={quote(akıllı bkz)}]*[/]
+        if re.search("^`:.*`$", entry_txt):
+            pass
+        # `hede`
+
     def on_button_pressed(self, event: Button.Pressed) -> None:
-        self.topicid = event.button.name
-        print(event.button.name)
+        if self.query(".entry-container"):
+            self.query(".entry-container").remove()
+        else:
+            self.query_one("#loading-container").styles.display = "none"
+        cont = content.result(token, event.button.name)
+        self.query_one(".entry-baslik").update(
+            f'[link=https://eksisozluk.com/{cont["Slug"]}--{cont["Id"]}]{cont["Title"]}[/]'
+        )
+        content_body = self.query_one("#content-body")
+        for i in cont["Entries"]:
+            entry_date = datetime.strptime(i["Created"], "%Y-%m-%dT%H:%M:%S.%f")
+            entry_id = i["Id"]
+            fav = str(i["FavoriteCount"])
+            author = i["Author"]["Nick"]
+
+            entry_txt = Static(i["Content"], classes="entry_txt")
+            entry_footer = Static(
+                (
+                    "[green]" + self.smalltext(f"({fav})") + "[/][i]"
+                    if fav != "0"
+                    else ""
+                )
+                + f" [link=https://eksisozluk.com/biri/{author}]{author}[/]"
+                + "\n"
+                + f'[link=https://eksisozluk.com/entry/{entry_id}]{entry_date.strftime("%d.%m.%Y %H:%M")}[/]',
+                classes="entry-footer",
+            )
+            ent_cont = Container(
+                Vertical(entry_txt, entry_footer, classes="entry"),
+                classes="entry-container",
+            )
+            content_body.mount(ent_cont)
 
     def on_key(self, event: events.Key) -> None:
         if event.key == "ctrl+x":

@@ -35,7 +35,7 @@
   border: hkey rgb(60, 49, 49);
   content-align: center middle;
 }
-.loading-container {
+#loading-container {
   width: 1fr;
   align: center middle;
 }
@@ -93,14 +93,20 @@ Sidebar:focus-within {
 Sidebar.-hidden {
   offset-x: -100%;
 }
-
-EntryContent {
-  scrollbar-size: 10 1;
-  overflow-y: scroll;
-  padding: 0 0 0 2;
+.nav {
+  text-style: italic;
+  content-align: center middle;
 }
+
+/* #content-body {
+  scrollbar-size: 10 1;
+  overflow-y: scroll; 
+  padding: 0;
+} */
 .entry-container {
   height: auto;
+  outline: tall red;
+  padding: 0 4;
 }
 .entry {
   background: $surface;
@@ -111,10 +117,9 @@ EntryContent {
 .entry-baslik {
   text-style: bold;
   color: rgb(112, 224, 112);
-  padding-bottom: 1;
+  padding: 0 0 1 4;
 }
 .entry-footer {
   color: rgb(68, 87, 80);
-  text-style: italic;
   content-align: right middle;
 }
