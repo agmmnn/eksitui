@@ -6,21 +6,19 @@ from textual.reactive import reactive
 from textual.screen import Screen
 from textual import events
 
-from rich.console import Console
-from rich.text import Text
-from rich import print
+from datetime import datetime
 
-import asyncio
-import httpx
+# import asyncio
+# import httpx
+
+#!!!
+import loading
+
 
 from src import gundem, gen_token, content
 
 token = gen_token.result()
 topicid = ""
-
-
-class Content(Vertical):
-    pass
 
 
 class TopicList(Widget):
@@ -37,23 +35,41 @@ class TopicList(Widget):
 
 class EntryContent(Widget):
     def compose(self) -> ComposeResult:
-        if topicid:
-            cont = content.result(token, "7250896")
-            # yield Static("1/93")
-            yield Static(
-                # f"""[@click="app.open_link('https://eksisozluk.com/{cont["Slug"]}--{cont["Id"]}')"]{cont["Title"]}[/]""",
-                f'[link=https://eksisozluk.com/{cont["Slug"]}--{cont["Id"]}]{cont["Title"]}[/]',
-                classes="entry-baslik",
+        # yield Container(
+        #     Static(loading.output(), classes="loading"),
+        #     classes="loading-container",
+        # )
+        cont = content.result(token, "7250896")
+        # yield Static("1/93")
+        yield Static(
+            # f"""[@click="app.open_link('https://eksisozluk.com/{cont["Slug"]}--{cont["Id"]}')"]{cont["Title"]}[/]""",
+            f'[link=https://eksisozluk.com/{cont["Slug"]}--{cont["Id"]}]{cont["Title"]}[/]',
+            classes="entry-baslik",
+        )
+        for i in cont["Entries"]:
+            entry_date = datetime.strptime(i["Created"], "%Y-%m-%dT%H:%M:%S.%f")
+            entry_id = i["Id"]
+            fav = str(i["FavoriteCount"])
+            author = i["Author"]["Nick"]
+
+            entry_content = Static(i["Content"])
+            entry_footer = Static(
+                (self.smalltext(f"({fav})") if fav else None)
+                + f" [link=https://eksisozluk.com/biri/{author}]{author}[/]"
+                + "\n"
+                + f'[link=https://eksisozluk.com/entry/{entry_id}]{entry_date.strftime("%d.%m.%Y %H:%M")}[/]',
+                classes="entry-footer",
             )
-            for i in cont["Entries"]:
-                entry_content = Static(i["Content"])
-                entry_footer = Static(
-                    f'{str(i["FavoriteCount"])} {i["Author"]["Nick"]} {i["Created"]}'
-                )
-                yield Container(
-                    Vertical(entry_content, entry_footer, classes="entry"),
-                    classes="entry-container",
-                )
+            yield Container(
+                Vertical(entry_content, entry_footer, classes="entry"),
+                classes="entry-container",
+            )
+
+    def smalltext(self, txt: str, type: int = 1) -> str:
+        inp = "qwertyuiopasdfghjklzxcvbnmğüşıöç1234567890()-'+=?!$"
+        super_chars = "ᑫʷᵉʳᵗʸᵘⁱᵒᵖᵃˢᵈᶠᵍʰʲᵏˡᶻˣᶜᵛᵇⁿᵐᵍᵘᶳᶥᵒᶜ¹²³⁴⁵⁶⁷⁸⁹⁰⁽⁾⁻'⁺⁼ˀꜝᙚ"
+        sub_chars = "ₐₑₕᵢₖₗₘₙₒₚᵣₛₜᵤᵥₓ₁₂₃₄₅₆₇₈₉₀₊₌₍₎₋₋₋₋₋₋₋₋₋₋₋₋₋₋₋₋₋₋₋₋₋"
+        return txt.translate(str.maketrans(inp, super_chars if type else sub_chars))
 
 
 class Sidebar(Container):
@@ -67,12 +83,6 @@ logotxt1 = """\
 logotxt2 = """\
  ▀█▀ █░█ █
  ░█░ █▄█ █"""
-
-righttxt = Static(
-    """\
-. *  ˚    *    .   ✫       *   * · .      *   ✧  ·       *   * · .       +      ★      ,      ✦             ˚""",
-    classes="righttxt",
-)
 
 
 class EksiTUIApp(App):
@@ -103,17 +113,15 @@ class EksiTUIApp(App):
             self.loggo,
             self.loggo2,
             search_input,
-            righttxt,
             classes="top",
         )
-        # yield Content(QuickIndex())
         entry = EntryContent()
         yield Vertical(
             Horizontal(TopicList(), entry), Sidebar(classes="-hidden"), Footer()
         )
 
     def on_button_pressed(self, event: Button.Pressed) -> None:
-        topicid = event.button.name
+        self.topicid = event.button.name
         print(event.button.name)
 
     def on_key(self, event: events.Key) -> None:

@@ -15,26 +15,31 @@
 .search_input {
   border: none;
   width: 30;
-  margin-left: 10;
+  margin-left: 7;
   background: $boost;
   border: vkey rgb(68, 87, 80); /* vkey, tall, blank, hkey */
   border-top: hidden;
 }
 .top {
-  /* margin-top: 1; */
-  /* padding: 0 0 1 1; */
-  outline-bottom: tall rgb(68, 87, 80);
   height: auto;
-  color: rgb(84, 82, 134);
   dock: top;
   background: $boost;
   margin-bottom: 1;
   padding-left: 1;
+  outline-bottom: tall rgb(68, 87, 80);
+}
+.loading {
+  width: auto;
+  height: auto;
+  align: center middle;
+  border: hkey rgb(60, 49, 49);
+  content-align: center middle;
+}
+.loading-container {
+  width: 1fr;
+  align: center middle;
 }
 
-/* Footer {
-  visibility: hidden;
-} */
 Checkbox {
   border: none;
   background: $boost;
@@ -98,7 +103,7 @@ EntryContent {
   height: auto;
 }
 .entry {
-  background: $panel;
+  background: $surface;
   height: auto;
   box-sizing: border-box;
   border-bottom: wide rgb(68, 87, 80);
@@ -107,4 +112,9 @@ EntryContent {
   text-style: bold;
   color: rgb(112, 224, 112);
   padding-bottom: 1;
+}
+.entry-footer {
+  color: rgb(68, 87, 80);
+  text-style: italic;
+  content-align: right middle;
 }
