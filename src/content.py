@@ -1,7 +1,7 @@
 import requests
 
 
-def result(token, topicid) -> list:
+def result(token, id, tip) -> list:
     headers = {
         "Host": "api.eksisozluk.com",
         "Client-Secret": "eabb8841-258d-4561-89a6-66c6501dee83",
@@ -9,7 +9,7 @@ def result(token, topicid) -> list:
         "User-Agent": "okhttp/3.12.1",
         "Authorization": "Bearer " + token,
     }
-    url = "https://api.eksisozluk.com/v2/topic/" + str(topicid)
+    url = f"https://api.eksisozluk.com/v2/{tip}/" + str(id)
     resp = requests.request("GET", url, headers=headers).json()
 
     return resp["Data"]

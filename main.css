@@ -50,19 +50,27 @@ TopicList {
   width: 32;
   padding-left: 1;
 }
-#topic-container > Button {
+#topic-container {
+  scrollbar-size: 10 1;
+  overflow-y: scroll;
+}
+#topic-container-list > Button {
   width: 100%;
   height: auto;
   border: none;
   padding-bottom: 1;
   text-align: start;
-  background: $surface;
+  background: $boost; /* $surface $panel $boost */
   outline-bottom: wide rgb(68, 87, 80);
 }
 .nav {
   text-style: bold;
   content-align: center middle;
   border: round rgb(93, 68, 68);
+}
+#topic-container-list {
+  height: auto;
+  margin-right: 1;
 }
 
 Footer {
@@ -84,11 +92,6 @@ Sidebar.-hidden {
   offset-x: -100%;
 }
 
-/* #content-body {
-  scrollbar-size: 10 1;
-  overflow-y: scroll; 
-  padding: 0;
-} */
 .entry-container {
   height: auto;
   outline: tall red;
@@ -102,8 +105,21 @@ Sidebar.-hidden {
 }
 .entry-baslik {
   text-style: bold;
+  width: auto;
   color: rgb(112, 224, 112);
   padding: 0 0 1 4;
+  margin-right: 10;
+}
+.entry-pagination {
+  width: auto;
+  content-align: right top;
+  align: right top;
+  border: none;
+  padding: 0 1 0 2;
+  border-bottom: wide rgb(68, 87, 80);
+}
+.entry-horizontal {
+  height: auto;
 }
 .entry-footer {
   color: rgb(68, 87, 80);

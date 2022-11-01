@@ -25,13 +25,14 @@ token = gen_token.result()
 class TopicList(Widget):
     def compose(self) -> ComposeResult:
         nav = Static(
-            "[@click=App.index_type('popular')]gündem[/] [@click=index_type('today')]bugün[/] [@click=index_type('debe')]debe[/]",
+            "[@click=get_topiclist('popular')]gündem[/] [@click=get_topiclist('today')]bugün[/] [@click=get_topiclist('debe')]debe[/]",
             classes="nav",
         )
         container = Container(id="topic-container")
-        container.mount(nav)
-        for i in gundem.result(token):
-            container.mount(Button(i[0], name=i[1]))
+        list_container = Container(id="topic-container-list")
+        for i in gundem.result(token, "popular"):
+            list_container.mount(Button(i[0], name=i[1]))
+        container.mount(nav, list_container)
         yield container
 
 
@@ -41,20 +42,18 @@ class EntryContent(Widget):
             Static(loading.output(), classes="loading"),
             id="loading-container",
         )
-        # yield Static("1/93")
+
         yield Container(
-            Static(
-                "entry-baslik",
-                classes="entry-baslik",
+            Horizontal(
+                Static(
+                    "entry-baslik",
+                    classes="entry-baslik",
+                ),
+                Input("1/93", classes="entry-pagination"),
+                classes="entry-horizontal",
             ),
-            # Container(classes="entry-container"),
             id="content-body",
         )
-        # Container#content-body)->
-        #       Static.entry-baslik,
-        #       Container.entry-container)->
-        #                   Vertical.entry)->
-        #                   Static.entry_txt, Static.entry-footer
 
 
 class Sidebar(Container):
@@ -105,12 +104,6 @@ class EksiTUIApp(App):
             Horizontal(TopicList(), entry), Sidebar(classes="-hidden"), Footer()
         )
 
-    def smalltext(self, txt: str, type: int = 1) -> str:
-        inp = "qwertyuiopasdfghjklzxcvbnmğüşıöç1234567890()-'+=?!$"
-        super_chars = "ᑫʷᵉʳᵗʸᵘⁱᵒᵖᵃˢᵈᶠᵍʰʲᵏˡᶻˣᶜᵛᵇⁿᵐᵍᵘᶳᶥᵒᶜ¹²³⁴⁵⁶⁷⁸⁹⁰⁽⁾⁻'⁺⁼ˀꜝᙚ"
-        sub_chars = "ₐₑₕᵢₖₗₘₙₒₚᵣₛₜᵤᵥₓ₁₂₃₄₅₆₇₈₉₀₊₌₍₎₋₋₋₋₋₋₋₋₋₋₋₋₋₋₋₋₋₋₋₋₋"
-        return txt.translate(str.maketrans(inp, super_chars if type else sub_chars))
-
     def content_convert(self, txt: str) -> str:
         entry_txt = txt
         # [http: ad] -> [link=http:]ad[/]
@@ -126,17 +119,24 @@ class EksiTUIApp(App):
             pass
         # `hede`
 
+        # ayrıca linkler : alt satıra geçince hatalı oluyor
+
     def on_button_pressed(self, event: Button.Pressed) -> None:
         if self.query(".entry-container"):
             self.query(".entry-container").remove()
         else:
             self.query_one("#loading-container").styles.display = "none"
-
         self.navigate_page(event.button.name)
         self.query_one
 
-    def navigate_page(self, topicid):
-        cont = content.result(token, topicid)
+    def smalltext(self, txt: str, type: int = 1) -> str:
+        inp = "qwertyuiopasdfghjklzxcvbnmğüşıöç1234567890()-'+=?!$"
+        super_chars = "ᑫʷᵉʳᵗʸᵘⁱᵒᵖᵃˢᵈᶠᵍʰʲᵏˡᶻˣᶜᵛᵇⁿᵐᵍᵘᶳᶥᵒᶜ¹²³⁴⁵⁶⁷⁸⁹⁰⁽⁾⁻'⁺⁼ˀꜝᙚ"
+        sub_chars = "ₐₑₕᵢₖₗₘₙₒₚᵣₛₜᵤᵥₓ₁₂₃₄₅₆₇₈₉₀₊₌₍₎₋₋₋₋₋₋₋₋₋₋₋₋₋₋₋₋₋₋₋₋₋"
+        return txt.translate(str.maketrans(inp, super_chars if type else sub_chars))
+
+    def navigate_page(self, id):
+        cont = content.result(token, id, self.topic_tip)
         self.query_one(".entry-baslik").update(
             f'[link=https://eksisozluk.com/{cont["Slug"]}--{cont["Id"]}]{cont["Title"]}[/]'
         )
@@ -154,11 +154,7 @@ class EksiTUIApp(App):
 
             entry_txt = Static(i["Content"], classes="entry_txt")
             entry_footer = Static(
-                (
-                    "[green]" + self.smalltext(f"({fav})") + "[/][i]"
-                    if fav != "0"
-                    else ""
-                )
+                ("[green]" + self.smalltext(f"+{fav}") + "[/][i]" if fav != "0" else "")
                 + f" [link=https://eksisozluk.com/biri/{author}]{author}[/]"
                 + "\n"
                 + f"[link=https://eksisozluk.com/entry/{entry_id}]{entry_date}[/]",
@@ -180,6 +176,7 @@ class EksiTUIApp(App):
             )
 
     def on_mount(self):
+        self.topic_tip = "topic"
         self.loggo.styles.animate(
             "opacity", value=1.0, duration=1.1, easing="out_bounce"
         )
@@ -204,8 +201,13 @@ class EksiTUIApp(App):
     def action_about(self) -> None:
         print("hakkinda")
 
-    def action_index_type(self, type) -> None:
-        print(type)
+    def action_get_topiclist(self, tip: str = "popular") -> None:
+        self.topic_tip = "entry" if tip == "debe" else "topic"
+        self.query("#topic-container-list").remove()
+        list_container = Container(id="topic-container-list")
+        for i in gundem.result(token, tip):
+            list_container.mount(Button(i[0], name=i[1]))
+        self.query_one("#topic-container").mount(list_container)
 
     def action_screenshot(
         self,

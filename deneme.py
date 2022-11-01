@@ -32,8 +32,9 @@ class MyApp(App):
         yield Static("eeee")
         yield Container(id="cont")
 
-    # def on_mount(self) -> None:
-    #     self.mount(Static("hello"), header=Header())
+    def on_mount(self) -> None:
+        # self.mount(Static("hello"), header=Header())
+        self.topic_tip = "sdf"
 
     def on_key(self, event: events.Key) -> None:
         if event.key == "ctrl+x":
@@ -43,3 +44,4 @@ class MyApp(App):
             self.query_one("#cont").refresh(layout=True)
         if event.key == "ctrl+t":
             self.query_one("#cont").remove()
+            print(self.topic_tip)
