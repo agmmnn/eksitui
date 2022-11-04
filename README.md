@@ -1,4 +1,4 @@
-![](ss.png)
+![](img/ss.png)
 
 # eksitui
 
