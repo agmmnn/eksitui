@@ -10,7 +10,7 @@ from datetime import datetime
 import re
 from urllib.parse import quote
 
-from . import loading, gundem, gen_token, content
+from . import loading, gen_token, content, topic_list
 
 token = gen_token.result()
 
@@ -23,7 +23,7 @@ class TopicList(Widget):
         )
         container = Container(id="topic-container")
         list_container = Container(id="topic-container-list")
-        for i in gundem.result(token, "popular"):
+        for i in topic_list.result(token, "popular"):
             list_container.mount(Button(i[0], name=i[1]))
         container.mount(nav, list_container)
         yield container
@@ -194,7 +194,7 @@ class EksiTUIApp(App):
         self.topic_tip = "entry" if tip == "debe" else "topic"
         self.query("#topic-container-list").remove()
         list_container = Container(id="topic-container-list")
-        for i in gundem.result(token, tip):
+        for i in topic_list.result(token, tip):
             list_container.mount(Button(i[0], name=i[1]))
         self.query_one("#topic-container").mount(list_container)
 

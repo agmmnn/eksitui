@@ -19,6 +19,6 @@ def result(token, tip) -> list:
     if tip == "debe":
         return [[i["Title"], str(i["EntryId"])] for i in resp["Data"]["DebeItems"]]
     return [
-        [f'{i["Title"]} [cyan italic]({str(i["MatchedCount"])})[/]', str(i["TopicId"])]
+        [f'{i["Title"]} [italic]({str(i["MatchedCount"])})[/]', str(i["TopicId"])]
         for i in resp["Data"]["Topics"]
     ]
