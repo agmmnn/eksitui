@@ -15,6 +15,10 @@ ap.add_argument("-v", "--version", action="version", version="%(prog)s v" + __ve
 args = ap.parse_args()
 
 
-if __name__ == "__main__":
+def cli():
     app = EksiTUIApp()
     app.run()
+
+
+if __name__ == "__main__":
+    cli()
