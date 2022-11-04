@@ -10,14 +10,7 @@ from datetime import datetime
 import re
 from urllib.parse import quote
 
-# import asyncio
-# import httpx
-
-#!!!
-import loading
-
-
-from src import gundem, gen_token, content
+from . import loading, gundem, gen_token, content
 
 token = gen_token.result()
 
@@ -109,16 +102,12 @@ class EksiTUIApp(App):
         # [http: ad] -> [link=http:]ad[/]
         if re.search("^\[http.*\]$", entry_txt):
             pass
-
         # [ ] -> \[ \]
-
         # (bkz: baslik) -> (bkz: [link=http:]baslik[/])
-
         # `:akıllı bkz` -> [link=https://eksisozluk.com/?q={quote(akıllı bkz)}]*[/]
         if re.search("^`:.*`$", entry_txt):
             pass
         # `hede`
-
         # ayrıca linkler : alt satıra geçince hatalı oluyor
 
     def on_button_pressed(self, event: Button.Pressed) -> None:
@@ -221,8 +210,3 @@ class EksiTUIApp(App):
         """
         self.bell()
         path = self.save_screenshot(filename, path)
-
-
-if __name__ == "__main__":
-    app = EksiTUIApp()
-    app.run()

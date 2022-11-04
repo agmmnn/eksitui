@@ -1,7 +1,7 @@
 .loggo {
   /* background: rgb(69, 58, 58); */
   width: auto;
-  color: $success;
+  color: $success-darken-1;
 }
 .loggo2 {
   /* background: rgb(69, 58, 58); */
@@ -106,7 +106,7 @@ Sidebar.-hidden {
 .entry-baslik {
   text-style: bold;
   width: auto;
-  color: rgb(112, 224, 112);
+  color: $success-darken-1;
   padding: 0 0 1 4;
   margin-right: 10;
 }
