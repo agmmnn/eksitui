@@ -10,7 +10,7 @@ from datetime import datetime
 import re
 from urllib.parse import quote
 
-from . import loading, gen_token, content, topic_list
+from . import loading, gen_token, content, topic_list, search
 
 token = gen_token.result()
 
@@ -42,7 +42,8 @@ class EntryContent(Widget):
                     "entry-baslik",
                     classes="entry-baslik",
                 ),
-                Input("1/93", classes="entry-pagination"),
+                Input("1", classes="entry-pagination"),
+                Static("/93"),
                 classes="entry-horizontal",
             ),
             id="content-body",
@@ -116,7 +117,6 @@ class EksiTUIApp(App):
         else:
             self.query_one("#loading-container").styles.display = "none"
         self.navigate_page(event.button.name)
-        self.query_one
 
     def smalltext(self, txt: str, type: int = 1) -> str:
         inp = "qwertyuiopasdfghjklzxcvbnmğüşıöç1234567890()-'+=?!$"
@@ -124,7 +124,7 @@ class EksiTUIApp(App):
         sub_chars = "ₐₑₕᵢₖₗₘₙₒₚᵣₛₜᵤᵥₓ₁₂₃₄₅₆₇₈₉₀₊₌₍₎₋₋₋₋₋₋₋₋₋₋₋₋₋₋₋₋₋₋₋₋₋"
         return txt.translate(str.maketrans(inp, super_chars if type else sub_chars))
 
-    def navigate_page(self, id):
+    def navigate_page(self, id) -> None:
         cont = content.result(token, id, self.topic_tip)
         self.query_one(".entry-baslik").update(
             f'[link=https://eksisozluk.com/{cont["Slug"]}--{cont["Id"]}]{cont["Title"]}[/]'
@@ -163,6 +163,9 @@ class EksiTUIApp(App):
             footer.styles.display = (
                 "none" if footer.styles.display == "block" else "block"
             )
+        if event.key == "enter":
+            id = search.result(token, self.query_one(Input).value)
+            self.navigate_page(id)
 
     def on_mount(self):
         self.topic_tip = "topic"
