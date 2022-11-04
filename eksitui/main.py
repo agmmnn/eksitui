@@ -42,8 +42,11 @@ class EntryContent(Widget):
                     "entry-baslik",
                     classes="entry-baslik",
                 ),
-                Input("1", classes="entry-pagination"),
-                Static("/93"),
+                Horizontal(
+                    Input("1", classes="entry-pagination-current"),
+                    Static(" / 999", classes="entry-pagination-last"),
+                    classes="entry-pagination",
+                ),
                 classes="entry-horizontal",
             ),
             id="content-body",
@@ -68,11 +71,11 @@ class EksiTUIApp(App):
     CSS_PATH = "main.css"
     BINDINGS = [
         ("t", "toggle_dark", "🎨Tema"),
-        ("ctrl+b", "toggle_sidebar", "Sidebar"),
+        # ("ctrl+b", "toggle_sidebar", "Sidebar"),
         ("ctrl+s", "app.screenshot()", "Screenshot"),
         ("f", "arama_focus", "Arama"),
         ("h", "about", "Hakkında"),
-        ("f1", "app.toggle_class('TextLog', '-hidden')", "Notes"),
+        # ("f1", "app.toggle_class('TextLog', '-hidden')", "Notes"),
         ("ctrl+c,ctrl+q", "app.quit", "🪧Çıkış"),
     ]
 
@@ -112,10 +115,6 @@ class EksiTUIApp(App):
         # ayrıca linkler : alt satıra geçince hatalı oluyor
 
     def on_button_pressed(self, event: Button.Pressed) -> None:
-        if self.query(".entry-container"):
-            self.query(".entry-container").remove()
-        else:
-            self.query_one("#loading-container").styles.display = "none"
         self.navigate_page(event.button.name)
 
     def smalltext(self, txt: str, type: int = 1) -> str:
@@ -125,10 +124,25 @@ class EksiTUIApp(App):
         return txt.translate(str.maketrans(inp, super_chars if type else sub_chars))
 
     def navigate_page(self, id) -> None:
+        if self.query(".entry-container"):
+            self.query(".entry-container").remove()
+        else:
+            self.query_one("#loading-container").styles.display = "none"
+
         cont = content.result(token, id, self.topic_tip)
         self.query_one(".entry-baslik").update(
             f'[link=https://eksisozluk.com/{cont["Slug"]}--{cont["Id"]}]{cont["Title"]}[/]'
         )
+        if self.topic_tip == "topic":
+            self.query_one(".entry-pagination-current").styles.visibility = "visible"
+            self.query_one(".entry-pagination-last").styles.visibility = "visible"
+            self.query_one(".entry-pagination-last").update(
+                " / " + str(cont["PageCount"])
+            )
+        else:
+            self.query_one(".entry-pagination-current").styles.visibility = "hidden"
+            self.query_one(".entry-pagination-last").styles.visibility = "hidden"
+
         content_body = self.query_one("#content-body")
         for i in cont["Entries"]:
             try:
@@ -164,8 +178,11 @@ class EksiTUIApp(App):
                 "none" if footer.styles.display == "block" else "block"
             )
         if event.key == "enter":
-            id = search.result(token, self.query_one(Input).value)
-            self.navigate_page(id)
+            try:
+                id = search.result(token, self.query_one(Input).value)
+                self.navigate_page(id)
+            except:
+                pass
 
     def on_mount(self):
         self.topic_tip = "topic"

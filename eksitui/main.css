@@ -112,8 +112,11 @@ Sidebar.-hidden {
 }
 .entry-pagination {
   width: auto;
-  content-align: right top;
-  align: right top;
+  height: auto;
+  /* outline: round rgb(93, 68, 68); */
+}
+.entry-pagination-current {
+  width: auto;
   border: none;
   padding: 0 1 0 2;
   border-bottom: wide rgb(68, 87, 80);
