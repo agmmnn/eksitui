@@ -157,8 +157,12 @@ class EksiTUIApp(App):
 
             entry_txt = Static(i["Content"], classes="entry_txt")
             entry_footer = Static(
-                ("[green]" + self.smalltext(f"+{fav}") + "[/][i]" if fav != "0" else "")
-                + f" [link=https://eksisozluk.com/biri/{author}]{author}[/]"
+                (
+                    "[dark_khaki]" + self.smalltext(f"({fav})") + "[/]"
+                    if fav != "0"
+                    else ""
+                )
+                + f" [dark_khaki][link=https://eksisozluk.com/biri/{author}]{author}[/][/dark_khaki]"
                 + "\n"
                 + f"[link=https://eksisozluk.com/entry/{entry_id}]{entry_date}[/]",
                 classes="entry-footer",
