@@ -1,17 +1,17 @@
-.loggo {
+.logo_part1 {
   /* background: rgb(69, 58, 58); */
   width: auto;
   color: $success-darken-1;
 }
-.loggo2 {
+.logo_part2 {
   /* background: rgb(69, 58, 58); */
   width: auto;
   color: $success-darken-2;
 }
-.righttxt {
+/* .right_txt {
   width: auto;
   color: $panel-darken-2;
-}
+} */
 .search_input {
   border: none;
   width: 30;
@@ -90,6 +90,13 @@ Sidebar:focus-within {
 
 Sidebar.-hidden {
   offset-x: -100%;
+}
+
+.topic-showall {
+  color: $success-darken-1;
+  align: center middle;
+  border: round rgb(60, 49, 49);
+  content-align: center middle;
 }
 
 .entry-container {

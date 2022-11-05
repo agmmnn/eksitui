@@ -58,10 +58,10 @@ class Sidebar(Container):
         yield Static("Textual Demo")
 
 
-logotxt1 = """\
+logo_part1 = """\
 █▀▀ █▄▀ █▀ █
 ██▄ █░█ ▄█ █"""
-logotxt2 = """\
+logo_part2 = """\
  ▀█▀ █░█ █
  ░█░ █▄█ █"""
 
@@ -85,14 +85,15 @@ class EksiTUIApp(App):
         webbrowser.open(link)
 
     def compose(self) -> ComposeResult:
-        self.loggo = Static(logotxt1, classes="loggo")
-        self.loggo.styles.opacity = 0.0
-        self.loggo2 = Static(logotxt2, classes="loggo2")
+        self.logo_part1 = Static(logo_part1, classes="logo_part1")
+        self.logo_part1.styles.opacity = 0.0
+        self.logo_part2 = Static(logo_part2, classes="logo_part2")
+        self.logo_part2.styles.opacity = 0.0
         search_input = Input(placeholder="arama", classes="search_input")
         search_input.cursor_blink = False
         yield Horizontal(
-            self.loggo,
-            self.loggo2,
+            self.logo_part1,
+            self.logo_part2,
             search_input,
             classes="top",
         )
@@ -144,6 +145,12 @@ class EksiTUIApp(App):
             self.query_one(".entry-pagination-last").styles.visibility = "hidden"
 
         content_body = self.query_one("#content-body")
+        content_body.mount(
+            Static(
+                f'↥ [@click=get_showall("popular")]{str(cont["EntryCounts"]["BeforeFirstEntry"])} entry daha[/] ↥',
+                classes="topic-showall",
+            )
+        )  # tümünü göster : showall more-data
         for i in cont["Entries"]:
             try:
                 entry_date = datetime.strptime(i["Created"], "%Y-%m-%dT%H:%M:%S.%f")
@@ -162,7 +169,7 @@ class EksiTUIApp(App):
                     if fav != "0"
                     else ""
                 )
-                + f" [dark_khaki][link=https://eksisozluk.com/biri/{author}]{author}[/][/dark_khaki]"
+                + f" [dark_khaki][link=https://eksisozluk.com/biri/{quote(author)}]{author}[/][/dark_khaki]"
                 + "\n"
                 + f"[link=https://eksisozluk.com/entry/{entry_id}]{entry_date}[/]",
                 classes="entry-footer",
@@ -190,7 +197,11 @@ class EksiTUIApp(App):
 
     def on_mount(self):
         self.topic_tip = "topic"
-        self.loggo.styles.animate(
+        # animations
+        self.logo_part1.styles.animate(
+            "opacity", value=1.0, duration=1.1, easing="out_bounce"
+        )
+        self.logo_part2.styles.animate(
             "opacity", value=1.0, duration=1.1, easing="out_bounce"
         )
 
