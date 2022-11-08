@@ -32,5 +32,5 @@ setup(
     include_package_data=True,
     package_data={"eksitui": ["eksitui/*"]},
     python_requires=">=3.7",
-    entry_points={"console_scripts": ["eksitui = eksitui.__main__:cli"]},
+    entry_points={"console_scripts": ["eksi = eksitui.__main__:cli"]},
 )
