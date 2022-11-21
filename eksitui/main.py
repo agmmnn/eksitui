@@ -31,6 +31,14 @@ class TopicList(Widget):
 
 class EntryContent(Widget):
     def compose(self) -> ComposeResult:
+        pagination = Horizontal(
+            Static("<", classes="entry-pagination-next"),
+            Input("1", classes="entry-pagination-current"),
+            Static("/999", classes="entry-pagination-last"),
+            Static(">", classes="entry-pagination-next"),
+            classes="entry-pagination",
+        )
+
         yield Container(
             Static(loading.output(), classes="loading"),
             id="loading-container",
@@ -42,13 +50,7 @@ class EntryContent(Widget):
                     "entry-baslik",
                     classes="entry-baslik",
                 ),
-                Horizontal(
-                    Static("<", classes="entry-pagination-next"),
-                    Input("1", classes="entry-pagination-current"),
-                    Static("/999", classes="entry-pagination-last"),
-                    Static("⨠", classes="entry-pagination-next"),
-                    classes="entry-pagination",
-                ),
+                pagination,
                 classes="entry-horizontal",
             ),
             id="content-body",
@@ -105,6 +107,7 @@ class EksiTUIApp(App):
         )
 
     def content_format(self, txt: str) -> str:
+        txt = txt.replace("'", "‛")
         # [http: text] -> [link=http:]text[/]
         def repl(m):
             item = re.search(r"(http(.*?)) (.*?)]", m[0]).groups()
@@ -115,16 +118,20 @@ class EksiTUIApp(App):
         # [ ] -> \[ \]
 
         # (bkz: baslik) -> (bkz: [link=http:]baslik[/])
+        def repl(m):
+            return f"(bkz: [@click=navigate_page_with_query('{m[1]}')]{m[1]}[/])"
+
+        txt = re.sub(r"\(bkz: (.*?(?<!\\))\)", repl, txt)
 
         # `:akıllı bkz` -> [link=https://eksisozluk.com/?q={quote(akıllı bkz)}]*[/]
         def repl(m):
-            return f"[@click=navigate_page('{query_id.result(token, m[1])}')]*[/]"
+            return f"[@click=navigate_page_with_query('{m[1]}')]*[/]"
 
         txt = re.sub(r"`:(.*?(?<!\\))`", repl, txt)
 
         # `hede`
         def repl(m):
-            return f"[@click=navigate_page('{query_id.result(token, m[1])}')]{m[1]}[/]"
+            return f"[@click=navigate_page_with_query('{m[1]}')]{m[1]}[/]"
 
         txt = re.sub(r"`(.*?(?<!\\))`", repl, txt)
 
@@ -137,7 +144,7 @@ class EksiTUIApp(App):
         return txt
 
     def on_button_pressed(self, event: Button.Pressed) -> None:
-        self.navigate_page(event.button.name)
+        self.navigate_page(event.button.name, self.categ)
 
     def smalltext(self, txt: str, type: int = 1) -> str:
         inp = "qwertyuiopasdfghjklzxcvbnmğüşıöç1234567890()-'+=?!$"
@@ -145,14 +152,14 @@ class EksiTUIApp(App):
         sub_chars = "ₐₑₕᵢₖₗₘₙₒₚᵣₛₜᵤᵥₓ₁₂₃₄₅₆₇₈₉₀₊₌₍₎₋₋₋₋₋₋₋₋₋₋₋₋₋₋₋₋₋₋₋₋₋"
         return txt.translate(str.maketrans(inp, super_chars if type else sub_chars))
 
-    def navigate_page(self, id) -> None:
+    def navigate_page(self, id, categ: str = "", page: int = 1) -> None:
         if self.query(".entry-container"):
             self.query(".entry-container").remove()
             self.query(".topic-showall").remove()
         else:
             self.query_one("#loading-container").styles.display = "none"
 
-        cont = content.result(token, id, self.topic_tip)
+        cont = content.result(token, self.topic_tip, id, categ)
 
         # baslik
         self.query_one(".entry-baslik").update(
@@ -225,12 +232,13 @@ class EksiTUIApp(App):
 
     def on_mount(self):
         self.topic_tip = "topic"
+        self.categ = "popular"
         # animations
         self.logo_part1.styles.animate(
-            "opacity", value=1.0, duration=1.1, easing="out_bounce"
+            "opacity", value=1.0, duration=1.8, easing="out_bounce"
         )
         self.logo_part2.styles.animate(
-            "opacity", value=1.0, duration=1.1, easing="out_bounce"
+            "opacity", value=1.0, duration=1.8, easing="out_bounce"
         )
 
     def action_toggle_dark(self):
@@ -255,10 +263,18 @@ class EksiTUIApp(App):
 
     def action_navigate_page(self, id) -> None:
         # !!!! topic_tip
-        self.navigate_page(id)
+        self.topic_tip = "topic"
+        self.navigate_page(id, "")
+
+    def action_navigate_page_with_query(self, term) -> None:
+        self.topic_tip = "topic"
+        id = query_id.result(token, quote(term))
+        if id:
+            self.navigate_page(id, "")
 
     def action_get_topiclist(self, tip: str = "popular") -> None:
         self.topic_tip = "entry" if tip == "debe" else "topic"
+        self.categ = tip if tip != "debe" else ""
         self.query("#topic-container-list").remove()
         list_container = Container(id="topic-container-list")
         for i in topic_list.result(token, tip):
