@@ -52,6 +52,7 @@ TopicList {
 }
 #topic-container {
   scrollbar-size: 10 1;
+  padding-right: 2;
   overflow-y: scroll;
 }
 #topic-container-list > Button {
@@ -95,14 +96,17 @@ Sidebar.-hidden {
 .topic-showall {
   color: $success-darken-1;
   align: center middle;
-  border: round rgb(60, 49, 49);
+  border: round rgb(36, 42, 40);
   content-align: center middle;
 }
 
 .entry-container {
   height: auto;
-  outline: tall red;
-  padding: 0 4;
+  padding: 0 3 0 1;
+  /* outline-left: wide rgb(68, 87, 80); */
+  border-left: heavy rgb(36, 42, 40);
+  outline-bottom: blank;
+  background: $surface;
 }
 .entry {
   background: $surface;
@@ -114,7 +118,7 @@ Sidebar.-hidden {
   text-style: bold;
   width: auto;
   color: $success-darken-1;
-  padding: 0 0 1 4;
+  padding: 0 0 1 2;
   margin-right: 10;
 }
 .entry-pagination {
@@ -125,8 +129,23 @@ Sidebar.-hidden {
 .entry-pagination-current {
   width: auto;
   border: none;
-  padding: 0 1 0 2;
+  padding: 0 1;
   border-bottom: wide rgb(68, 87, 80);
+  background: rgb(68, 87, 80);
+}
+.entry-pagination-last {
+  width: auto;
+  background: $surface;
+  border-bottom: wide rgb(68, 87, 80);
+}
+.entry-pagination-next {
+  width: auto;
+  height: 1;
+  border: none;
+  margin: 0 1;
+  background: $boost; /* $surface $panel $boost */
+  border-bottom: wide rgb(68, 87, 80);
+  text-style: bold;
 }
 .entry-horizontal {
   height: auto;

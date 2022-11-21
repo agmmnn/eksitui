@@ -29,5 +29,5 @@ pip install "textual[dev]"
 ```
 
 ```
-> textual run --dev eksitui
+textual run --dev eksitui.main:EksiTUIApp
 ```

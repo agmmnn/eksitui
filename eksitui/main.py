@@ -10,7 +10,7 @@ from datetime import datetime
 import re
 from urllib.parse import quote
 
-from . import loading, gen_token, content, topic_list, search
+from . import loading, gen_token, content, topic_list, query_id
 
 token = gen_token.result()
 
@@ -43,8 +43,10 @@ class EntryContent(Widget):
                     classes="entry-baslik",
                 ),
                 Horizontal(
+                    Static("<", classes="entry-pagination-next"),
                     Input("1", classes="entry-pagination-current"),
-                    Static(" / 999", classes="entry-pagination-last"),
+                    Static("/999", classes="entry-pagination-last"),
+                    Static("⨠", classes="entry-pagination-next"),
                     classes="entry-pagination",
                 ),
                 classes="entry-horizontal",
@@ -102,18 +104,37 @@ class EksiTUIApp(App):
             Horizontal(TopicList(), entry), Sidebar(classes="-hidden"), Footer()
         )
 
-    def content_convert(self, txt: str) -> str:
-        entry_txt = txt
-        # [http: ad] -> [link=http:]ad[/]
-        if re.search("^\[http.*\]$", entry_txt):
-            pass
+    def content_format(self, txt: str) -> str:
+        # [http: text] -> [link=http:]text[/]
+        def repl(m):
+            item = re.search(r"(http(.*?)) (.*?)]", m[0]).groups()
+            return f"[link={item[0]}]{item[2]}↗[/]"
+
+        txt = re.sub(r"\x5Bhttp.*?]", repl, txt)
+
         # [ ] -> \[ \]
+
         # (bkz: baslik) -> (bkz: [link=http:]baslik[/])
+
         # `:akıllı bkz` -> [link=https://eksisozluk.com/?q={quote(akıllı bkz)}]*[/]
-        if re.search("^`:.*`$", entry_txt):
-            pass
+        def repl(m):
+            return f"[@click=navigate_page('{query_id.result(token, m[1])}')]*[/]"
+
+        txt = re.sub(r"`:(.*?(?<!\\))`", repl, txt)
+
         # `hede`
-        # ayrıca linkler : alt satıra geçince hatalı oluyor
+        def repl(m):
+            return f"[@click=navigate_page('{query_id.result(token, m[1])}')]{m[1]}[/]"
+
+        txt = re.sub(r"`(.*?(?<!\\))`", repl, txt)
+
+        # linkler
+        def repl(m):
+            return f"[link={m[0]}]{m[0]}↗[/]"
+
+        txt = re.sub(r"(?<!\x5Blink=)http?\S*", repl, txt)
+
+        return txt
 
     def on_button_pressed(self, event: Button.Pressed) -> None:
         self.navigate_page(event.button.name)
@@ -127,30 +148,39 @@ class EksiTUIApp(App):
     def navigate_page(self, id) -> None:
         if self.query(".entry-container"):
             self.query(".entry-container").remove()
+            self.query(".topic-showall").remove()
         else:
             self.query_one("#loading-container").styles.display = "none"
 
         cont = content.result(token, id, self.topic_tip)
+
+        # baslik
         self.query_one(".entry-baslik").update(
-            f'[link=https://eksisozluk.com/{cont["Slug"]}--{cont["Id"]}]{cont["Title"]}[/]'
+            f'[@click=navigate_page({cont["Id"]})]{cont["Title"]}[/]'
+            + f'[link=https://eksisozluk.com/{cont["Slug"]}--{cont["Id"]}]↗[/]'
         )
+
+        # pagination
         if self.topic_tip == "topic":
             self.query_one(".entry-pagination-current").styles.visibility = "visible"
             self.query_one(".entry-pagination-last").styles.visibility = "visible"
             self.query_one(".entry-pagination-last").update(
-                " / " + str(cont["PageCount"])
+                "/" + str(cont["PageCount"])
             )
         else:
             self.query_one(".entry-pagination-current").styles.visibility = "hidden"
             self.query_one(".entry-pagination-last").styles.visibility = "hidden"
 
         content_body = self.query_one("#content-body")
-        content_body.mount(
-            Static(
-                f'↥ [@click=get_showall("popular")]{str(cont["EntryCounts"]["BeforeFirstEntry"])} entry daha[/] ↥',
-                classes="topic-showall",
+
+        # showall more-data
+        if self.topic_tip != "entry" and cont["EntryCounts"]["BeforeFirstEntry"]:
+            content_body.mount(
+                Static(
+                    f'↥ [@click=get_showall("popular")]{str(cont["EntryCounts"]["BeforeFirstEntry"])} entry daha[/] ↥',
+                    classes="topic-showall",
+                )
             )
-        )  # tümünü göster : showall more-data
         for i in cont["Entries"]:
             try:
                 entry_date = datetime.strptime(i["Created"], "%Y-%m-%dT%H:%M:%S.%f")
@@ -162,7 +192,7 @@ class EksiTUIApp(App):
             fav = str(i["FavoriteCount"])
             author = i["Author"]["Nick"]
 
-            entry_txt = Static(i["Content"], classes="entry_txt")
+            entry_txt = Static(self.content_format(i["Content"]), classes="entry_txt")
             entry_footer = Static(
                 (
                     "[dark_khaki]" + self.smalltext(f"({fav})") + "[/]"
@@ -189,11 +219,9 @@ class EksiTUIApp(App):
                 "none" if footer.styles.display == "block" else "block"
             )
         if event.key == "enter":
-            try:
-                id = search.result(token, self.query_one(Input).value)
-                self.navigate_page(id)
-            except:
-                pass
+            print(self.query_one(Input).value)
+            id = query_id.result(token, self.query_one(Input).value)
+            self.navigate_page(id)
 
     def on_mount(self):
         self.topic_tip = "topic"
@@ -224,6 +252,10 @@ class EksiTUIApp(App):
 
     def action_about(self) -> None:
         print("hakkinda")
+
+    def action_navigate_page(self, id) -> None:
+        # !!!! topic_tip
+        self.navigate_page(id)
 
     def action_get_topiclist(self, tip: str = "popular") -> None:
         self.topic_tip = "entry" if tip == "debe" else "topic"

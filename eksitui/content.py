@@ -14,7 +14,11 @@ def result(token, id, tip) -> list:
         "User-Agent": "okhttp/3.12.1",
         "Authorization": "Bearer " + token,
     }
-    url = f"https://api.eksisozluk.com/v2/{tip}/" + str(id) + "/popular?p=1"
+    url = (
+        f"https://api.eksisozluk.com/v2/{tip}/"
+        + str(id)
+        + ("/popular?p=1" if tip != "entry" else "")
+    )
     resp = requests.request("GET", url, headers=headers).json()
 
     return resp["Data"]
