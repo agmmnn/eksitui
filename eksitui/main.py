@@ -32,7 +32,9 @@ class TopicList(Widget):
 class EntryContent(Widget):
     def compose(self) -> ComposeResult:
         pagination = Horizontal(
-            Static("[@click=pager('before')]<[/]", classes="entry-pagination-before"),
+            Static(
+                "[@click=pager('previous')]<[/]", classes="entry-pagination-previous"
+            ),
             Input("1", classes="entry-pagination-current", name="pager_go"),
             Static("/[@click=pager_go(999)]999[/]", classes="entry-pagination-last"),
             Static("[@click=pager('next')]>[/]", classes="entry-pagination-next"),
@@ -85,7 +87,7 @@ class EksiTUIApp(App):
         # ("l", "live_mode", "💫Live Mode"),
         # ("h", "about", "Hakkında"),
         # ("f1", "app.toggle_class('TextLog', '-hidden')", "Notes"),
-        ("q", "pager('before')", "←Önceki"),
+        ("q", "pager('previous')", "←Önceki"),
         ("w", "pager('next')", "→Sonraki"),
         ("ctrl+c,ctrl+q", "app.quit", "🪧Çıkış"),
     ]
@@ -151,8 +153,8 @@ class EksiTUIApp(App):
 
         txt = re.sub(r"(?<!\x5Blink=)(http|https):\/\/?\S*", repl, txt)
 
-        with open("test.txt", "w", encoding="utf-8") as f:
-            f.write(txt)
+        # with open("test.txt", "w", encoding="utf-8") as f:
+        #     f.write(txt)
         return txt
 
     def watch_baslik(self, value):
@@ -177,7 +179,7 @@ class EksiTUIApp(App):
         # pagination
         if self.topic_tip != "entry":
             self.lastpage = cont["PageCount"]
-            self.query_one(".entry-pagination-before").styles.visibility = "visible"
+            self.query_one(".entry-pagination-previous").styles.visibility = "visible"
             self.query_one(".entry-pagination-current").styles.visibility = "visible"
             self.query_one(".entry-pagination-last").styles.visibility = "visible"
             self.query_one(".entry-pagination-next").styles.visibility = "visible"
@@ -185,7 +187,7 @@ class EksiTUIApp(App):
                 f"/[@click=pager_go({cont['PageCount']})]{cont['PageCount']}[/]"
             )
         else:
-            self.query_one(".entry-pagination-before").styles.visibility = "hidden"
+            self.query_one(".entry-pagination-previous").styles.visibility = "hidden"
             self.query_one(".entry-pagination-current").styles.visibility = "hidden"
             self.query_one(".entry-pagination-last").styles.visibility = "hidden"
             self.query_one(".entry-pagination-next").styles.visibility = "hidden"
@@ -256,10 +258,6 @@ class EksiTUIApp(App):
             footer.styles.display = (
                 "none" if footer.styles.display == "block" else "block"
             )
-        # if event.key == "enter":
-        #     print(self.query_one(".search-input").value)
-        #     id = query_id.result(token, self.query_one(".search-input").value)
-        #     self.navigate_page(id, "topic", "")
 
     def on_input_submitted(self, event: Input.Submitted) -> None:
         self.set_focus(None)
@@ -268,8 +266,6 @@ class EksiTUIApp(App):
         elif event.input.name == "pager_go" and event.value.isnumeric():
             if int(event.value) <= self.lastpage and int(event.value) >= 1:
                 self.action_pager_go(event.value)
-
-    # def on_input_f
 
     def on_button_pressed(self, event: Button.Pressed) -> None:
         i = event.button.name.split(":")
@@ -317,7 +313,7 @@ class EksiTUIApp(App):
                     )
                 else:
                     self.navigate_page(self.id, "topic", self.categ, 1)
-            elif act == "before":
+            elif act == "previous":
                 if self.currentpage != 1:
                     self.navigate_page(
                         self.id, "topic", self.categ, self.currentpage - 1

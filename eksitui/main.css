@@ -145,7 +145,7 @@ Sidebar.-hidden {
   border-bottom: wide rgb(68, 87, 80);
 }
 .entry-pagination-next,
-.entry-pagination-before {
+.entry-pagination-previous {
   width: auto;
   height: 1;
   border: none;
