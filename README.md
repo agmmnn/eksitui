@@ -1,10 +1,9 @@
-![eksitui](img/ss.png)
-
 <div align="center">
-<a href="https://github.com/agmmnn/nisanyan-cli">
-<img alt="GitHub release (latest by date)" src="https://img.shields.io/github/v/release/agmmnn/nisanyan-cli"></a>
-<a href="https://pypi.org/project/nisanyan-cli/">
-<img alt="PyPI" src="https://img.shields.io/pypi/v/nisanyan-cli"></a>
+<img src="img/ss.png" alt="eksitui screenshot"/>
+<a href="https://github.com/agmmnn/eksitui">
+<img alt="GitHub release (latest by date)" src="https://img.shields.io/github/v/release/agmmnn/eksitui"></a>
+<a href="https://pypi.org/project/eksitui/">
+<img alt="PyPI" src="https://img.shields.io/pypi/v/eksitui"></a>
 
 Terminal User Interface for Turkish collaborative hypertext dictionary [ekşi sözlük](https://eksisozluk.com/). With power of the [textual](https://github.com/Textualize/textual) framework.
 
@@ -16,9 +15,9 @@ Terminal User Interface for Turkish collaborative hypertext dictionary [ekşi s�
 pip install eksitui
 ```
 
-> _*ekşi sözlük* is a collaborative hypertext dictionary based on the concept of Web sites built up on user contribution. It is currently one of the largest online communities in Turkey._
+> _**ekşi sözlük** is a collaborative hypertext dictionary based on the concept of Web sites built up on user contribution. It is currently one of the largest online communities in Turkey._
 
-> _As an online public sphere, Ekşi Sözlük is not only utilized by thousands for information sharing on various topics ranging from scientific subjects to everyday life issues, but also used as a virtual socio-political community to communicate disputed political contents and to share personal views._ -[wiki](https://en.wikipedia.org/wiki/Ek%C5%9Fi_S%C3%B6zl%C3%BCk)
+> _As an online public sphere, ekşi sözlük is not only utilized by thousands for information sharing on various topics ranging from scientific subjects to everyday life issues, but also used as a virtual socio-political community to communicate disputed political contents and to share personal views. -[wiki](https://en.wikipedia.org/wiki/Ek%C5%9Fi_S%C3%B6zl%C3%BCk)_
 
 ## Usage
 
@@ -44,9 +43,10 @@ $ eksi <topic>
 
 ## Dev
 
-```powershell
-pip install "textual[dev]"
-textual run --dev eksitui.main:EksiTUIApp
+```
+$ pip install "textual[dev]"
+$ textual console
+$ textual run --dev eksitui.main:EksiTUIApp
 ```
 
 ### Dependencies
