@@ -1,7 +1,7 @@
 from .main import EksiTUIApp
 import argparse
 
-__version__ = "0.1"
+__version__ = "0.1.1"
 
 # parse arguments
 ap = argparse.ArgumentParser()
