@@ -1,0 +1,1 @@
+(bkz: [@click=navigate_page_with_query('yaran başlıklar')]yaran başlıklar[/])

@@ -1,6 +1,3 @@
-$animation-type: linear;
-$animation-speed: 175ms;
-
 .logo_part1 {
   /* background: rgb(69, 58, 58); */
   width: auto;
@@ -64,7 +61,7 @@ TopicList {
   text-align: start;
   background: $boost; /* $surface $panel $boost */
   outline-bottom: wide rgb(68, 87, 80);
-  transition: background $animation-speed $animation-type;
+  /* transition: background 100ms linear; */
 }
 
 #topic-container-list > Button:hover {

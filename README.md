@@ -1,3 +1,4 @@
+![](img/ss.svg)
 ![](img/ss.png)
 
 # eksitui
