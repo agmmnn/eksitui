@@ -15,6 +15,8 @@ Terminal User Interface for Turkish collaborative hypertext dictionary [ekşi s�
 pip install eksitui
 ```
 
+---
+
 > _**ekşi sözlük** is a collaborative hypertext dictionary based on the concept of Web sites built up on user contribution. It is currently one of the largest online communities in Turkey._
 
 > _As an online public sphere, ekşi sözlük is not only utilized by thousands for information sharing on various topics ranging from scientific subjects to everyday life issues, but also used as a virtual socio-political community to communicate disputed political contents and to share personal views. -[wiki](https://en.wikipedia.org/wiki/Ek%C5%9Fi_S%C3%B6zl%C3%BCk)_
