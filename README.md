@@ -5,7 +5,7 @@
 <a href="https://pypi.org/project/eksitui/">
 <img alt="PyPI" src="https://img.shields.io/pypi/v/eksitui"></a>
 
-Terminal User Interface for Turkish collaborative hypertext dictionary [ekşi sözlük](https://eksisozluk.com/). With power of the [textual](https://github.com/Textualize/textual) framework.
+Terminal User Interface for Turkish collaborative hypertext dictionary [ekşi sözlük](https://eksisozluk.com/). With the power of the [textual](https://github.com/Textualize/textual) framework.
 
 </div>
 
@@ -28,17 +28,19 @@ $ eksi <topic>
 # directly starts the application with given topic
 ```
 
+![](/img/ss2.png)
+
 ### Shourtcuts:
 
 ```
-#  T: Dark/Light Theme
-#  Ctrl+S: Saves the Screenshot in app's folder
-#  F: Focus Search Input
-#  Ctrl+X: Clear Search Input
-#  Q: Previous Page
-#  W: Next Page
-#  Ctrl+O: Hide/Show Footer Bar
-#  Ctrl+Q: Quit
+      T: Dark/Light Theme
+ Ctrl+S: Saves the Screenshot in app's folder
+      F: Focus Search Input
+ Ctrl+X: Clear Search Input
+      Q: Previous Page
+      W: Next Page
+ Ctrl+O: Hide/Show Footer Bar
+ Ctrl+Q: Quit
 ```
 
 ## Dev

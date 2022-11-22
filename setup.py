@@ -8,12 +8,16 @@ with open("requirements.txt", "r") as file:
     requires = [line.strip() for line in file.readlines()]
 
 VERSION = m.__version__
-DESCRIPTION = "eksi sozluk terminal user interface."
+DESCRIPTION = "TUI for Turkish collaborative hypertext dictionary ekşi sözlük."
 
 setup(
     name="eksitui",
     version=VERSION,
     url="https://github.com/agmmnn/eksitui",
+    project_urls={
+        "Changelog": "https://github.com/agmmnn/eksitui/releases",
+        "Source": "https://github.com/agmmnn/eksitui",
+    },
     description=DESCRIPTION,
     long_description=long_description,
     long_description_content_type="text/markdown",
