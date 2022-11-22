@@ -24,17 +24,14 @@ pip install eksitui
 
 ```python
 $ eksi
-
 # or
-
 $ eksi <topic>
-
 # directly starts the application with given topic
 ```
 
 ### Shourtcuts:
 
-```python
+```
 #  T: Dark/Light Theme
 #  Ctrl+S: Saves the Screenshot in app's folder
 #  F: Focus Search Input
