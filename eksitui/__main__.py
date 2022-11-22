@@ -16,7 +16,12 @@ args = ap.parse_args()
 
 
 def main():
-    EksiTUIApp().run()
+    app = EksiTUIApp()
+    word = " ".join(args.word)
+    if word:
+        print(word)
+        app.word = word
+    app.run()
 
 
 if __name__ == "__main__":

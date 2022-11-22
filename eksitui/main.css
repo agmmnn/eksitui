@@ -1,18 +1,19 @@
+$animation-type: linear;
+$animation-speed: 175ms;
+
 .logo_part1 {
   /* background: rgb(69, 58, 58); */
   width: auto;
   color: $success-darken-1;
+  opacity: 0;
 }
 .logo_part2 {
   /* background: rgb(69, 58, 58); */
   width: auto;
   color: $success-darken-2;
+  opacity: 0;
 }
-/* .right_txt {
-  width: auto;
-  color: $panel-darken-2;
-} */
-.search_input {
+.search-input {
   border: none;
   width: 30;
   margin-left: 7;
@@ -63,6 +64,11 @@ TopicList {
   text-align: start;
   background: $boost; /* $surface $panel $boost */
   outline-bottom: wide rgb(68, 87, 80);
+  transition: background $animation-speed $animation-type;
+}
+
+#topic-container-list > Button:hover {
+  background: rgb(192, 192, 218);
 }
 .nav {
   text-style: bold;
@@ -76,6 +82,7 @@ TopicList {
 
 Footer {
   background: rgb(53, 41, 61);
+  color: rgb(192, 192, 218);
 }
 
 Sidebar {
@@ -109,27 +116,29 @@ Sidebar.-hidden {
   background: $surface;
 }
 .entry {
+  border-bottom: wide rgb(68, 87, 80);
   background: $surface;
   height: auto;
   box-sizing: border-box;
-  border-bottom: wide rgb(68, 87, 80);
 }
 .entry-baslik {
-  text-style: bold;
   width: auto;
+  height: auto;
+  /* background: $background-lighten-2; */
+  padding: 0 2;
   color: $success-darken-1;
-  padding: 0 0 1 2;
-  margin-right: 10;
+  text-style: bold;
 }
 .entry-pagination {
   width: auto;
   height: auto;
-  /* outline: round rgb(93, 68, 68); */
+  align: right top;
+  padding-right: 2;
 }
 .entry-pagination-current {
-  width: auto;
+  width: 4;
+  padding: 0;
   border: none;
-  padding: 0 1;
   border-bottom: wide rgb(68, 87, 80);
   background: rgb(68, 87, 80);
 }
@@ -138,7 +147,8 @@ Sidebar.-hidden {
   background: $surface;
   border-bottom: wide rgb(68, 87, 80);
 }
-.entry-pagination-next {
+.entry-pagination-next,
+.entry-pagination-before {
   width: auto;
   height: 1;
   border: none;
@@ -146,9 +156,6 @@ Sidebar.-hidden {
   background: $boost; /* $surface $panel $boost */
   border-bottom: wide rgb(68, 87, 80);
   text-style: bold;
-}
-.entry-horizontal {
-  height: auto;
 }
 .entry-footer {
   color: rgb(68, 87, 80);
