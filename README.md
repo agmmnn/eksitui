@@ -1,6 +1,6 @@
 <div align="center">
-<img src="img/ss.png" alt="eksitui screenshot"/>
-<a href="https://github.com/agmmnn/eksitui">
+<img src="https://user-images.githubusercontent.com/16024979/203432210-4ae7ea61-4d11-4a5f-9633-ab9b4b682780.png" alt="eksitui screenshot"/>
+<a href="https://github.com/agmmnn/eksitui/releases">
 <img alt="GitHub release (latest by date)" src="https://img.shields.io/github/v/release/agmmnn/eksitui"></a>
 <a href="https://pypi.org/project/eksitui/">
 <img alt="PyPI" src="https://img.shields.io/pypi/v/eksitui"></a>
@@ -28,7 +28,7 @@ $ eksi <topic>
 # directly starts the application with given topic
 ```
 
-![](/img/ss2.png)
+![ss2](https://user-images.githubusercontent.com/16024979/203432272-dfa799ac-e3d4-4320-85a2-1bb6855cf843.png)
 
 ### Shourtcuts:
 
