@@ -32,7 +32,7 @@ $ eksi <topic>
 
 ![ss2](https://user-images.githubusercontent.com/16024979/203432272-dfa799ac-e3d4-4320-85a2-1bb6855cf843.png)
 
-### Shourtcuts:
+### Shortcuts:
 
 ```
       T: Dark/Light Theme
