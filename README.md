@@ -1,5 +1,5 @@
 <div align="center">
-<img src="https://user-images.githubusercontent.com/16024979/203432210-4ae7ea61-4d11-4a5f-9633-ab9b4b682780.png" alt="eksitui screenshot"/>
+<img src="https://user-images.githubusercontent.com/16024979/203560629-9138dfc5-dd6f-492a-be2a-0f2ef168c1b4.png" alt="eksitui screenshot"/>
 <a href="https://github.com/agmmnn/eksitui/releases">
 <img alt="GitHub release (latest by date)" src="https://img.shields.io/github/v/release/agmmnn/eksitui"></a>
 <a href="https://pypi.org/project/eksitui/">
