@@ -103,10 +103,13 @@ class EksiTUIApp(App):
             search_input,
             classes="top",
         )
-        entry = EntryContent()
+
         yield Vertical(
-            Horizontal(TopicList(), entry), Sidebar(classes="-hidden"), Footer()
+            Horizontal(TopicList(), EntryContent()),
+            Sidebar(classes="-hidden"),
+            classes="root",
         )
+        yield Footer()
 
     def content_format(self, txt: str) -> str:
         # ' -> ‛
