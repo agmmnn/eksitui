@@ -50,7 +50,7 @@ $ eksi <topic>
 ```
 $ pip install "textual[dev]"
 $ textual console
-$ textual run --dev eksitui.main:EksiTUIApp
+$ poetry run textual run --dev eksitui.main:EksiTUIApp
 ```
 
 ### Dependencies
