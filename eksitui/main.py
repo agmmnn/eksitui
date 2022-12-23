@@ -6,8 +6,9 @@ from textual.reactive import reactive
 from textual.screen import Screen
 from textual import events
 
-from datetime import datetime
+import os
 import re
+from datetime import datetime
 from urllib.parse import quote
 
 from . import loading, gen_token, content, topic_list, query_id, utils
@@ -346,5 +347,6 @@ class EksiTUIApp(App):
             filename (str | None, optional): Filename of screenshot, or None to auto-generate. Defaults to None.
             path (str, optional): Path to directory. Defaults to "./".
         """
+        downloads_dir = os.path.join(os.path.expanduser("~"), "Downloads")
+        path = self.save_screenshot(filename, downloads_dir)
         self.bell()
-        path = self.save_screenshot(filename, path)
