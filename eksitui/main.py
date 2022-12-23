@@ -4,7 +4,7 @@ from textual.widgets import *
 from textual.widget import Widget
 from textual.reactive import reactive
 from textual.screen import Screen
-from textual import events, log
+from textual import events
 
 from datetime import datetime
 import re
@@ -40,6 +40,12 @@ class EntryContent(Widget):
             Static("[@click=pager('next')]>[/]", classes="entry-pagination-next"),
             classes="entry-pagination",
         )
+        baslik = Static(
+            "entry-baslik",
+            classes="entry-baslik",
+        )
+        pagination.styles.display = "none"
+        baslik.styles.display = "none"
 
         yield Container(
             Static(loading.output(), classes="loading"),
@@ -47,10 +53,7 @@ class EntryContent(Widget):
         )
 
         yield Container(
-            Static(
-                "entry-baslik",
-                classes="entry-baslik",
-            ),
+            baslik,
             pagination,
             id="content-body",
         )
@@ -173,7 +176,9 @@ class EksiTUIApp(App):
         cont = content.result(token, topic_tip, id, categ, page)
         self.id = cont["Id"]
         self.currentpage = page
+
         # baslik
+        self.query_one(".entry-baslik").styles.display = "block"
         self.baslik = (
             f'[@click=navigate_page({cont["Id"]})]{cont["Title"]}[/]'
             + f'[link=https://eksisozluk.com/{cont["Slug"]}--{cont["Id"]}]↗[/]'
@@ -181,19 +186,13 @@ class EksiTUIApp(App):
 
         # pagination
         if self.topic_tip != "entry":
+            self.query_one(".entry-pagination").styles.display = "block"
             self.lastpage = cont["PageCount"]
-            self.query_one(".entry-pagination-previous").styles.visibility = "visible"
-            self.query_one(".entry-pagination-current").styles.visibility = "visible"
-            self.query_one(".entry-pagination-last").styles.visibility = "visible"
-            self.query_one(".entry-pagination-next").styles.visibility = "visible"
             self.query_one(".entry-pagination-last").update(
                 f"/[@click=pager_go({cont['PageCount']})]{cont['PageCount']}[/]"
             )
         else:
-            self.query_one(".entry-pagination-previous").styles.visibility = "hidden"
-            self.query_one(".entry-pagination-current").styles.visibility = "hidden"
-            self.query_one(".entry-pagination-last").styles.visibility = "hidden"
-            self.query_one(".entry-pagination-next").styles.visibility = "hidden"
+            self.query_one(".entry-pagination").styles.display = "none"
 
         content_body = self.query_one("#content-body")
 
