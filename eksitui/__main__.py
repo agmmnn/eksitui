@@ -1,7 +1,6 @@
 from .main import EksiTUIApp
 import argparse
-
-__version__ = "0.1.2"
+from importlib_metadata import version
 
 # parse arguments
 ap = argparse.ArgumentParser()
@@ -11,7 +10,9 @@ ap.add_argument(
     nargs="*",
     help="<word>",
 )
-ap.add_argument("-v", "--version", action="version", version="%(prog)s v" + __version__)
+ap.add_argument(
+    "-v", "--version", action="version", version=f"eksitui {version('eksitui')}"
+)
 args = ap.parse_args()
 
 

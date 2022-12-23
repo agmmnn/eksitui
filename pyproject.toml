@@ -1,0 +1,39 @@
+[tool.poetry]
+name = "eksitui"
+version = "0.1.3"
+description = "TUI for Turkish collaborative hypertext dictionary ekşi sözlük."
+authors = ["Gökçe <agmmnn@gmail.com>"]
+readme = "README.md"
+packages = [{ include = "eksitui" }]
+homepage = "https://github.com/agmmnn/eksitui"
+repository = "https://github.com/agmmnn/eksitui"
+keywords = ["eksi", "turkish", "sozluk", "cli", "eksisozluk", "tui"]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Operating System :: OS Independent",
+    "Environment :: Console",
+    "Topic :: Utilities",
+]
+
+[tool.poetry.urls]
+Changelog = "https://github.com/agmmnn/eksitui/releases"
+Source = "https://github.com/agmmnn/eksitui"
+"Bug Tracker" = "https://github.com/agmmnn/eksitui/issues"
+
+[tool.poetry.dependencies]
+python = "^3.7"
+textual = "^0.8.0"
+requests = "^2.28.1"
+
+[tool.poetry.group.dev.dependencies]
+black = "^22.12.0"
+
+[tool.poetry.scripts]
+eksi = "eksitui.__main__:main"
+
+[tool.black]
+includes = "eksitui"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
